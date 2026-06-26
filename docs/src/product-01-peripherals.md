@@ -6,6 +6,140 @@ The audience is people designing peripheral hardware for the platform.
 
 For the motherboard connector specifications that peripherals plug into, see the core technical document.
 
+## M8 Peripheral Identification, Firmware, and Configuration
+
+Before describing specific peripherals, this document establishes the platform infrastructure that every M8 peripheral uses: how the motherboard identifies what is connected, how firmware is provisioned for active peripherals, and how configuration is managed. These mechanisms parallel those used by the mezzanine bus (described in the mezzanine bus document) and apply the same architectural patterns to the smaller-pin-count M8 connector.
+
+### The Two-Tier Identification Scheme
+
+The M8 connector supports two tiers of identification, layered to match the cost and complexity of the peripheral. The first tier uses purely passive components and serves peripherals with no active electronics. The second tier uses an I2C EEPROM and serves peripherals that have programmable elements or need richer identification. Every peripheral implements at least the first tier; peripherals that benefit from the second tier implement both.
+
+**Tier one: passive identification through tie-to-ground GPIO patterns.**
+
+Peripherals signal their class to the motherboard through which of the M8's configurable signal pins they tie to ground. The platform does not dedicate a specific M8 pin to identification; instead, the existing configurable signal pins serve double duty as both signaling pins (when actively used by the peripheral) and identification carriers (when not used).
+
+The mechanics are simple. The motherboard's GPIO inputs on the configurable signal pins have internal pull-ups enabled. When no peripheral is connected, all pins read high. When a passive peripheral is connected, the peripheral ties one or more pins to ground through PCB routing (no components needed; the pins are simply routed to the peripheral's ground plane in the platform-specified pattern). The motherboard reads the resulting pattern and decodes the peripheral class.
+
+This handles the passive peripheral case cleanly: a footswitch breakout with nothing but switches and an I2C GPIO expander; an analog jack breakout with just connectors and protection components; a passthrough adapter for testing. These peripherals have nothing to identify beyond "I am a peripheral of class X with these basic capabilities," and an EEPROM with its supporting circuitry would be a meaningful fraction of their BOM. The tie-to-ground identification adds literally zero component cost.
+
+The encoding capability with three configurable signal pins gives eight distinct patterns. The platform reserves several for specific purposes:
+
+- All pins floating high (no pull-downs): no peripheral connected
+- Specific patterns for platform-defined standard passive peripherals (footswitch breakouts of various sizes, contact mic breakout, simple passthroughs, escape hatch variants)
+- Specific patterns for registered third-party passive peripherals
+- One specific pattern reserved for active peripherals, signaling "proceed to tier-two identification through EEPROM"
+
+Three pins gives only eight codes, which is less encoding capacity than the mezzanine bus's eight GPIO pins provide. If the M8 peripheral ecosystem grows to need more than a few passive peripheral classes, the platform can extend the encoding by using GPIO state combinations across both the configurable signals and other pins, or by reserving more pattern codes for "active peripheral, check EEPROM for actual class" and pushing class differentiation into the EEPROM tier.
+
+This identification happens through GPIO reads of the configurable signal pins, before the motherboard powers up the M8's other signals fully. The motherboard reads the pattern within microseconds and decides what to do next based on what is connected.
+
+**Tier two: EEPROM identification.**
+
+Peripherals with active components or that need richer identification implement tier-two identification through a small I2C EEPROM on the M8's I2C bus. The EEPROM lives at a known I2C address and contains the structured identity record used elsewhere in the platform: vendor ID, device ID, hardware revision, serial number, capability descriptor, schema version compatibility ranges, and the other fields specified in the mezzanine bus document.
+
+Peripherals that implement tier two also implement tier one, with the tie-to-ground pattern set to the active-peripheral signal. This tells the motherboard "do not configure me as a passive class; instead, run the full EEPROM identification protocol on the I2C bus." The cost of implementing tier one on a tier-two peripheral is zero in components (it is purely a PCB routing decision); only the EEPROM itself adds cost.
+
+### Serial Numbers and Per-Instance Identity
+
+Active M8 peripherals (those with tier-two EEPROM identification) follow the same serial number convention as mezzanines, described in detail in the mezzanine bus document. Each physical peripheral has a unique serial number programmed into its EEPROM during manufacturing. The serial number is a 16-byte field with the vendor ID encoded in the first 4 bytes and a vendor-allocated sequence in the remaining 12 bytes.
+
+The user-facing functionality the serial number enables is the same as for mezzanines:
+
+**Persistent nicknames** that follow the peripheral across moves. A user with two ESP32 dongles can name them "Studio Wi-Fi" and "Stage Wi-Fi" and have the nicknames follow the physical dongles regardless of which module they are plugged into.
+
+**Per-instance configuration** keyed by serial number. A footswitch breakout that the user has configured for specific switch-to-event mappings carries its configuration with it when moved between modules. A contact mic breakout with carefully tuned per-channel thresholds keeps its settings when used on different parent modules.
+
+**Move detection** as the peripheral connects to different modules. The motherboard at the chain level recognizes the peripheral by serial number and applies the appropriate configuration. Hot-plug becomes much more useful when configuration follows the physical hardware.
+
+**Replacement detection** if a peripheral fails and is replaced. The platform offers to transfer the failed peripheral's configuration and nickname to the new unit.
+
+The serial number is strongly recommended but technically optional for M8 peripherals, just as for mezzanines. A peripheral without a serial number works but loses per-instance tracking; the platform falls back to less precise per-type tracking. Vendors are encouraged to include serial numbers because the user experience is meaningfully better with them.
+
+Tier-one passive peripherals (those without EEPROMs) do not have serial numbers. This is acceptable because tier-one peripherals are typically cheap and generic; the lack of per-instance tracking is not a meaningful loss. Users with a collection of passive footswitch breakouts treat them as interchangeable, which is the platform's expected behavior for tier-one peripherals.
+
+### Hot-Plug Behavior
+
+M8 peripherals are explicitly designed to support hot-plug, which is the major behavioral difference between M8 peripherals and mezzanines. Users connect and disconnect M8 peripherals during normal operation: plugging in a footswitch breakout in the middle of a performance, swapping an ESP32 dongle between modules, attaching a tile baseplate to a different parent module.
+
+The detection mechanism uses the configurable signal pins on the M8 connector. The motherboard polls these pins periodically (or uses interrupt-on-change configuration) to detect transitions. When no peripheral is connected, the configurable signal pins read high through the motherboard's internal pull-ups. When a peripheral connects, whichever pins it ties to ground go low, and the resulting pattern identifies the peripheral class.
+
+When a peripheral is connected (the pattern transitions from all-high to a valid class pattern), the motherboard runs the identification sequence: read the GPIO pattern, optionally read the EEPROM for tier two, look up firmware in the repository, push firmware if needed, signal ready, integrate the peripheral into the routing graph. The motherboard debounces the GPIO reads (waits for the pattern to be stable for 10-50 milliseconds before acting) to handle the brief transient state where some pins make contact before others during physical insertion.
+
+When a peripheral is disconnected (the pattern transitions back to all-high), the motherboard tears down the peripheral's state: remove it from the routing graph, save any user-modifiable state, free the resources it was using. The next peripheral plugged in starts the process fresh.
+
+A typical peripheral's connection sequence takes 100-500 milliseconds depending on whether firmware push is needed. For passive peripherals (tier one only) the sequence is faster, mostly limited by the debounce time. For active peripherals with firmware push, the sequence is dominated by the firmware streaming time.
+
+After identification completes for an active peripheral, the motherboard reconfigures the configurable signal pins for their actual signaling roles as specified in the peripheral's capability descriptor. The pins are now used by the peripheral for whatever signaling its firmware needs; their identification role was complete after the initial read.
+
+The hot-plug capability is genuinely useful and a meaningful difference from the mezzanine bus's fixed-at-boot model. Users dynamically configure their rig during performances or between songs.
+
+### Firmware Provisioning for Active Peripherals
+
+The mezzanine bus document establishes the platform's centralized firmware story: hardware is stateless at rest; firmware is held in the motherboard's central repository; the motherboard pushes firmware to programmable elements when they need it. This story extends to M8 peripherals.
+
+The motherboard holds firmware images for known peripheral types. When an active peripheral is identified through its EEPROM, the motherboard looks up the appropriate firmware (matching vendor ID, device ID, hardware revision range, and firmware version compatibility). The firmware push path uses the M8's SPI capability for peripherals that use SPI, or the M8's UART for peripherals that use UART, with the motherboard putting the peripheral's programmable chip into bootloader mode through a dedicated control sequence.
+
+For peripherals using a small microcontroller (an STM32G0 is the typical choice for a low-cost M8 peripheral with active electronics), the chip's built-in bootloader supports firmware loading over UART or SPI. The motherboard drives the BOOT0 pin high during reset to enter bootloader mode, then streams the firmware image through the standard ST bootloader protocol.
+
+For the ESP32 wireless coprocessor specifically (whether deployed as an external M8 dongle or as an internal daughter board), firmware push uses SPI streaming to the ESP32's flash through the ESP32's built-in bootloader. See the ESP32 section in the core technical document for details.
+
+For peripherals with no programmable elements (passive footswitch breakouts, simple analog peripherals), there is no firmware to push. The motherboard configures whatever I2C devices are on the peripheral through standard I2C commands, using the EEPROM's capability descriptor as the guide for what those devices are and how to talk to them.
+
+### Configuration Schemas
+
+The platform's commitment to firmware-versus-configuration separation, with protobuf schemas providing disciplined evolution, extends to M8 peripherals. Each peripheral type has its own protobuf schema defining the configuration data structure. The schemas live alongside mezzanine schemas in the platform's peripheral and mezzanine registry.
+
+The peripheral configuration captures user intent and persists across firmware updates. A footswitch breakout's configuration includes things like LED brightness, debouncing parameters, what events each switch generates. A contact mic breakout's configuration includes per-channel threshold and gain parameters and optional analysis settings (which transient detection algorithm to use, with what parameters). A tile baseplate's configuration captures tile-position-to-function mappings.
+
+Configuration lives on the motherboard, not on the peripheral. When a peripheral connects, the motherboard pushes the relevant configuration to the peripheral's active elements through I2C control messages or through whatever protocol the peripheral uses for parameter updates. The peripheral itself does not store configuration; it receives parameter values from the motherboard.
+
+This means hot-plug works cleanly: a peripheral disconnected and reconnected receives its previous configuration from the motherboard automatically. The user does not have to reconfigure anything; the configuration persists on the motherboard regardless of which physical peripheral is currently connected.
+
+It also means a peripheral can be moved between modules in a chain. The configuration follows the peripheral (because the motherboard at the chain level coordinates with whichever module the peripheral is currently attached to), so swapping which module hosts a peripheral does not require reconfiguration.
+
+Configuration schemas evolve through the same disciplined process used for mezzanines: new fields get new numbers; deprecated fields are marked but not removed; firmware declares which schema versions it understands; protobuf's compatibility semantics handle the cross-version cases gracefully. User configurations from older firmware continue to work after firmware updates; new firmware capabilities show up as additional fields that older configurations simply do not exercise.
+
+### The Pin Allocation
+
+The M8 connector's eight pins are allocated:
+
+- Power (3.3V)
+- Ground
+- I2C SCL (carries EEPROM communication during identification, peripheral control during normal operation)
+- I2C SDA (paired with SCL)
+- Configurable signal 1 (UART TX, SPI MOSI, GPIO, analog input/output, or passive identification carrier when not used by an active peripheral)
+- Configurable signal 2 (UART RX, SPI MISO, GPIO, or passive identification carrier)
+- Configurable signal 3 (interrupt, SPI clock, GPIO, or passive identification carrier)
+- Configurable signal 4 (interrupt, SPI CS, GPIO, or passive identification carrier)
+
+The configurable signal pins serve double duty. Passive peripherals tie one or more of these pins to ground in the platform-specified pattern to encode their class for tier-one identification; the pins are otherwise unused on these peripherals. Active peripherals use these pins for actual signaling (UART, SPI, GPIO, etc.) after identification completes, having signaled "I am active, read my EEPROM" through the appropriate tie-to-ground pattern during the brief identification window.
+
+This allocation reclaims one pin compared to having a dedicated identification pin. The platform's M8 connector now has four configurable signal pins instead of three, which enables richer peripheral classes (full four-wire SPI with separate clock and chip-select, for example, plus an interrupt line and additional signaling on the spare pin).
+
+The platform specifies which configurable signals each peripheral class uses through the class registry. A footswitch breakout class might specify "configurable signals 1-4 unused for signaling; passive identification uses pins 1 and 3 tied to ground." An ESP32 dongle class specifies "configurable signal 1 is SPI MOSI, signal 2 is SPI MISO, signal 3 is SPI CS, signal 4 is interrupt; passive identification uses the all-active pattern (configurable signal 4 tied to ground)." A contact mic breakout specifies its own pin allocation.
+
+The flexibility of the configurable signals lets the same connector serve diverse peripheral types. The class identification (whether through the passive tie-to-ground pattern or through tier-two EEPROM identification) tells the motherboard which configuration to use, so the peripheral does not have to assume the motherboard guesses correctly.
+
+### Implications for Peripheral Designers
+
+A third-party peripheral designer participating in the ecosystem:
+
+Registers their vendor ID with the platform's compliance program (the same vendor ID space used for mezzanines).
+
+Assigns device IDs to their peripherals within their vendor ID space.
+
+Includes the passive identification tie-to-ground pattern on every peripheral (tier-one identification, total cost zero in components and a single PCB routing decision).
+
+If the peripheral has active electronics or needs richer identification, includes an I2C EEPROM with the platform-specified identity record format (tier-two identification, total cost a few cents).
+
+Defines a protobuf schema for their peripheral's configuration, following the platform's schema conventions, and submits the .proto file to the peripheral registry alongside firmware.
+
+If the peripheral has programmable elements, designs firmware that handles the configuration schema and ignores unknown fields gracefully. Includes a default configuration generator that the motherboard can request.
+
+Documents which configurable M8 signals the peripheral uses, and tests the peripheral against the platform's compliance test suite to verify the identification, firmware push, and configuration push all work correctly.
+
+This is essentially the same discipline that mezzanine designers follow, adapted to the smaller-scale M8 peripheral context. The unified pattern across mezzanines and peripherals means designers learn one set of conventions and apply them across hardware they create for either connection point.
+
 ## The Contact Mic Breakout Peripheral
 
 A natural v0 peripheral worth specifying explicitly is a contact mic breakout: a small board hosting an array of piezo transducer inputs that turn any physical surface into a percussion controller. This complements the on-module IMU tap detection by extending the platform's percussion capabilities beyond what the module's own case can do, while sharing the routing-graph integration. The IMU lets users tap on the module; the contact mic breakout lets users hit anything they want to make percussive.

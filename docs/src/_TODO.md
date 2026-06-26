@@ -315,7 +315,171 @@ This is the kind of specialty mezzanine the platform's bus specification was des
 
 ### v1 Reserved Pins Do Not Need S/PDIF Allocation
 
-The 50-pin connector specification reserves 3 pins for future protocol extensions. None of these need to be specifically allocated for S/PDIF or related digital audio interfaces. The existing I2S, SPI, and GPIO buses are sufficient for a specialty mezzanine to implement S/PDIF locally. The reserved pins should stay genuinely reserved for protocol extensions we cannot currently predict.
+The 80-pin connector specification reserves 30 pins for future protocol extensions. None of these need to be specifically allocated for S/PDIF or related digital audio interfaces. The existing I2S, SPI, and GPIO buses are sufficient for a specialty mezzanine to implement S/PDIF locally. The reserved pins should stay genuinely reserved for protocol extensions we cannot currently predict.
+
+## The Robot Finger Peripheral: Bridging Digital Control to Analog Gear
+
+A specific peripheral concept worth capturing for future development is what we are calling the "robot finger": a small motorized peripheral that physically actuates controls on existing analog gear. The motivating use case is users who own beloved analog pedals (vintage Tube Screamers, hand-built fuzz pedals, treasured compressors, whatever) and want the platform's digital control plane to reach into those pedals without modifying the pedals themselves.
+
+The concept takes inspiration from the Useless Machine, the iconic novelty toy where flipping a switch causes a small mechanical finger to emerge from the box and flip the switch back off. The toy is itself a piece of folk engineering that demonstrates a simple idea (a mechanism that responds to physical input with physical output) in a charming and memorable way. The robot finger peripheral takes the same idea seriously: instead of returning a switch to off, the finger turns a knob or flips a switch in response to control signals from the Metapedal routing graph.
+
+### Why This Matters
+
+The platform's "you do not have to adopt the whole thing" positioning depends on Metapedal integrating with existing gear rather than replacing it. Most existing gear has MIDI for control, and Metapedal modules can drive MIDI directly through their TRRS jacks or peripheral ports. But a large category of beloved analog pedals predate widespread MIDI adoption and have no electronic control inputs at all. The only way to change parameters on these pedals is to physically turn the knob or flip the switch.
+
+The robot finger bridges this gap. A user with a treasured analog overdrive can put a robot finger on the drive knob, configure the Metapedal routing graph to send control signals from a footswitch or sensor to the robot finger, and now their analog pedal's drive parameter is software-controlled. The pedal itself is not modified; the robot finger sits on top of the existing knob and turns it through small motorized motion.
+
+### Implementation Concept
+
+The robot finger is a small enclosure (perhaps the size of a couple of stacked coins) that attaches to an existing analog pedal through some mechanical means: adhesive, a small clamp, a magnetic mount for pedals with steel enclosures, or a custom bracket for specific pedal form factors. Inside the enclosure is a small servo or stepper motor, a tiny microcontroller, and the M8 connection back to the host Metapedal motherboard.
+
+The servo or stepper drives a small mechanical interface that engages with the analog pedal's control. For a knob: a soft rubber or silicone disc that presses lightly against the knob and rotates it through friction, with enough grip to turn the knob and enough slip to handle the user manually turning the knob without damaging the actuator. For a switch: a small lever that pushes the switch up or down (or stomps the footswitch, for floor-based controls). For a toggle: a small bar that flips the toggle to its other position.
+
+The peripheral communicates with the host module through I2C over the M8 Smart Digital connection. The host module sends "set position to N" commands; the robot finger's microcontroller drives the motor to the requested position. Position calibration happens at setup time, where the user manually rotates the knob to its minimum and maximum, the robot finger records the corresponding motor positions, and subsequent control commands interpolate within that calibrated range.
+
+### The Range of Form Factors
+
+Different analog pedals have different control geometries. The robot finger concept probably needs a small family of variants to cover the common cases:
+
+**Knob variant.** The most common case. A rotational actuator that drives a knob through friction. Various knob diameters need different actuator sizes; a small family (maybe small, medium, large) covers most pedal knobs.
+
+**Toggle switch variant.** A small mechanism that flips a toggle switch between two positions. The actuator is binary rather than continuous, which simplifies the mechanical design.
+
+**Slide switch variant.** A small mechanism for slider switches, which require linear motion rather than rotational or pivoting motion.
+
+**Footswitch variant.** A larger mechanism for the stompbox footswitch itself, which requires more force and travel than the knob or toggle variants. The footswitch variant would be a small motorized stomper that lives on top of the pedal and presses the switch down on command. This variant is the closest in spirit to the original Useless Machine.
+
+Each variant has its own engineering challenges, and the user might own different pedals that need different variants. The Metapedal peripheral catalog could include the most common ones (knob and footswitch are probably the highest-priority); the others come along as the community builds them.
+
+### Engineering Considerations
+
+The robot finger is genuinely a small mechanical engineering project. Key concerns:
+
+**Mechanical reliability.** The actuator engages with the pedal's control mechanism repeatedly over the pedal's lifetime. The interface needs to hold up under normal use without slipping, without damaging the original control, and without becoming unreliable as the rubber friction surfaces age.
+
+**Mounting stability.** The robot finger has to stay attached to the analog pedal during a chaotic performance. Adhesive mounts work for some pedals but not all; clamp mounts are more universal but more fiddly. The mounting solution may be the hardest part of the engineering.
+
+**Power consumption.** The actuator motors draw current. The host Metapedal module's M8 port provides limited current; high-torque actuators may exceed the budget. Either the robot finger uses low-current actuators with appropriate gear ratios, or it has its own power input separate from the M8 connection.
+
+**Acoustic noise.** Servo motors and stepper motors make audible noise when they move. For pedals that are being used during recording, the actuator noise could bleed into microphones. Low-noise actuators (smooth-running steppers, fluid-damped servos) cost more but eliminate this concern.
+
+**User override.** A user touching the knob while the robot finger is also driving it should not damage anything and should produce a sensible behavior. The simplest design lets the user manually override the position; the robot finger detects the discrepancy at its next update and either accepts the new position or drives back to the commanded position depending on configuration.
+
+### Strategic Value
+
+The robot finger peripheral is not necessary for v1 and probably should not be in the v1 product line. But the concept is worth capturing because it represents a specific bridge between the platform's digital control plane and the analog gear that musicians actually own and love. The "you do not have to adopt the whole thing" positioning depends on these kinds of bridges existing; the robot finger is one of the most evocative examples.
+
+The third-party ecosystem can develop these. A maker with a 3D printer, some small servos, and a basic microcontroller can prototype a robot finger for a specific pedal in an afternoon. The Metapedal peripheral protocol gives them the host-side interface they need; the mechanical work is bounded and well within hobbyist capability. A community of makers building robot fingers for different pedals would be exactly the kind of ecosystem the platform is designed to enable.
+
+The Useless Machine framing is also charming in a way that fits the platform's voice. The original toy is a piece of folk engineering that demonstrates a simple idea with humor and precision; the robot finger inherits that spirit while applying it to a genuinely useful problem. Marketing the peripheral with light Useless Machine references would land well with the platform's audience.
+
+## The Hybrid Analog-Digital Studio Use Case
+
+A specific configuration worth capturing because it demonstrates the platform's partial-adoption story particularly well: the B variant module as a software-controllable analog send and return loop.
+
+The configuration is simple. A B variant module's DAC drives audio out through its analog output. That signal flows through one or more external analog pedals (a beloved analog overdrive, a vintage compressor, a hand-built filter, a short chain of such pedals). The chain's output flows back into the B variant module's analog input. The module's ADC digitizes the analog-processed audio and returns it to the routing graph. The onboard DSP is entirely uninvolved; the module is functioning purely as a digital-to-analog-to-digital round trip.
+
+### Why This Is Useful
+
+Several substantive benefits emerge from this configuration:
+
+**Beloved analog pedals at any point in the chain.** The user's treasured analog gear effectively lives inside the digital routing graph at any point the routing specifies. The same overdrive pedal can appear before reverb in one preset, after reverb in another preset, and bypassed entirely in a third preset, all controlled through software rather than through cable repatching.
+
+**Multiple analog chains as composable elements.** A short chain of analog pedals (compressor into overdrive into specific filter) becomes a single addressable element in the user's mental model. The routing graph treats this analog chain like any other audio processing block, sending signals to its input and consuming signals from its output. Multiple such analog chains can coexist, each accessible from the routing graph independently.
+
+**Parallel analog and digital processing.** A signal can be sent through both an analog round-trip and a parallel digital effects chain simultaneously, with software-controlled wet-dry mixing between the two. The analog character contributes to the sound without dominating it; the wet-dry mix is determined by the routing graph.
+
+**Software bypass of analog gear.** Analog pedals that lack true-bypass or remote-bypass capability become effectively bypass-able through the routing graph: the routing simply does not route signals through the B variant module hosting that pedal's send-return loop. The analog pedal does not need bypass support of its own.
+
+**Pre-and-post recording.** The B variant module captures the post-analog-chain signal at its input. The user can record this captured signal alongside the dry pre-analog signal from earlier in the chain, getting both tracks simultaneously. This preserves the production option of re-amping or replacing the analog character later.
+
+**A/B comparison between analog and digital paths.** The same source can be sent through an analog round-trip (via the B variant) and through a digital effect (via Metapedal DSP) simultaneously. The user can compare or blend the two paths to find what works best for their specific source material.
+
+### The Combination With the Robot Finger
+
+When combined with the robot finger peripheral (covered in the previous section), the analog gear becomes fully software-controllable. The routing graph determines whether the analog chain receives signal; the routing graph determines what parameter values the robot finger sets on the analog pedal's knob; the routing graph determines how the analog-processed output is mixed back into the chain. The user's analog gear becomes a fully integrated element of the digital signal flow, with its tonal character preserved but its control surface fully digital.
+
+This is the closest thing to "best of both worlds" that the platform offers for users who genuinely love their analog gear. The analog signal path is preserved with all its character; the control over the analog gear is as flexible as anything purely digital.
+
+### The Hybrid Studio Pain Point
+
+The hybrid analog-digital studio has been a long-running pain point in audio production. Producers who own specific analog gear (specific outboard preamps, vintage compressors, specific overdrive pedals, hand-built filter banks) have wanted to integrate this gear with modern DAW workflows for decades. The pain point is that getting analog gear into and out of the DAW cleanly requires expensive multi-channel I/O and complex routing through audio interfaces, with all the analog-digital boundary management that implies.
+
+Various commercial products attempt to address this: the Black Lion Audio Sparrow, certain Antelope Audio interfaces with bundled analog effects, the SSL pure-analog products. None are open hardware. None offer software-defined routing through arbitrary analog gear in the way Metapedal does.
+
+A few Metapedal B variant modules, each hosting a piece of beloved analog gear in a send-return loop, give the user an elegant hybrid setup. The DAW sees the analog-processed results through the Metapedal modules functioning as USB audio interfaces. The user's analog gear lives at exactly the right point in the digital signal flow as configured by the routing graph. This is a real solution to a real problem that many producers have been working around for years.
+
+### Implementation Notes
+
+The configuration does not require new hardware or new firmware capabilities beyond what v1 already covers. A standard B1 or B2 module supports this use case out of the box; the user just routes signals through the module's audio path and configures the routing graph accordingly. The web platform's routing UI should make this configuration easy to set up, perhaps with a specific "analog send-return" template that users can apply to a module to configure it for this role.
+
+One refinement worth thinking about for the analog send-return template: the user probably wants the option to compensate for the slight latency introduced by the DAC and ADC conversion (about 0.6 ms each, so roughly 1.2 ms round-trip in addition to the analog chain's own latency). For most uses this latency is inaudible; for production work where phase alignment matters, the routing graph could automatically delay parallel dry signals by the same amount to keep them aligned with the analog-processed wet signal.
+
+### Why This Belongs in the Documentation Set
+
+The hybrid analog-digital configuration is captured here in the TODO document because it represents a use case that deserves explicit treatment in the platform's marketing and onboarding materials but does not require any specific v1 product or feature work beyond what already exists. The platform's web UI should make this configuration easy to set up; the platform's marketing materials should feature this use case as an example of partial adoption that respects users' existing gear; the platform's example presets and tutorials should include "analog pedal send-return" as a standard pattern users can apply.
+
+The hybrid configuration is also the natural pairing with the robot finger peripheral. The two ideas together (send-return loop plus parameter control via robot actuator) form a complete bridge between digital control planes and analog signal paths. Either idea alone is useful; together they are a meaningful contribution to the audio production toolkit.
+
+## Audio-to-Control Extraction: The Algorithm Catalog
+
+The platform's ability to analyze audio and produce control signals is mentioned in the vision document as a meaningful user-visible capability, but the specific algorithms and their DSP cost have not been fully scoped. This section captures the algorithm catalog and the scoping question for v1 versus v1.x firmware.
+
+The architectural foundation is already in place. Every module's audio input feeds through the codec into the H7's audio processing pipeline. The routing graph handles control signals as first-class typed events. The only missing pieces are the specific analysis algorithms running on the H7's DSP capacity, the configuration UI for setting them up, and the control signal types that audio analysis produces.
+
+### The Algorithm Catalog
+
+**Envelope follower.** Continuous output tracking the smoothed amplitude of the audio input. DSP cost: trivial, a few dozen cycles per sample. Output: a control signal in the 0.0 to 1.0 range updated at audio rate or downsampled to control rate. Use cases: dynamics-responsive parameters, ducking, automatic gain adjustment.
+
+**Transient detector.** Discrete trigger events emitted when the audio crosses a configured threshold with appropriate hysteresis and refractory periods. DSP cost: low, a few hundred cycles per sample. Output: trigger events with optional velocity information based on peak amplitude. Use cases: kick drum triggers, hand clap detection, transient-driven step sequencers.
+
+**Voice activity detector.** Binary output indicating whether the audio contains speech/singing or just noise/silence. DSP cost: low to moderate, often combining envelope and spectral features. Output: a binary control signal with hysteresis to prevent rapid toggling. Use cases: automatic muting of channels during quiet sections, automatic engagement of vocal effects, communication-system style automatic gain.
+
+**Pitch detector.** Continuous output of the fundamental frequency of the audio input, with confidence indication. DSP cost: moderate, a few thousand cycles per sample for a competent autocorrelation-based detector running at audio rate. Output: a control signal carrying frequency in Hz (or note number with cents detuning) plus a confidence value. Use cases: filter that tracks vocal pitch, auto-harmonizer that produces fixed intervals, synth voice that doubles a melodic line.
+
+**Beat tracker.** Periodic output of tempo estimate plus phase information indicating where downbeats fall. DSP cost: moderate per analysis frame but low per audio sample (frames happen 10-100 times per second). Output: tempo in BPM, phase position within the measure, confidence values. Use cases: tempo-locked delays, beat-synced arpeggiators, automatic tempo matching for backing tracks.
+
+**Spectral feature extractor.** Continuous output of various spectral characteristics: low/mid/high band energy, spectral centroid (perceptual brightness), spectral flux (rate of spectral change), spectral entropy (signal complexity). DSP cost: moderate, dominated by the FFT (a few thousand cycles per FFT frame, frames at 100-1000 Hz). Output: a vector of control signals, one per spectral feature. Use cases: EQ that responds to band density, reverb that adapts to spectral context, dynamics that responds to perceptual brightness.
+
+**Room ambient analyzer.** Combined analysis of overall amplitude plus spectral features plus voice activity to characterize the room context: how loud is the room, how busy is the spectral content, is anyone speaking/singing or is the room quiet. DSP cost: moderate, basically the sum of the underlying analyses. Output: a small vector of control signals characterizing the room. Use cases: parameters that respond to performance context.
+
+**Onset detector.** Discrete events emitted when new sound events begin (different from pure transient detection because onsets can be in the middle of ongoing sound). DSP cost: moderate, requires spectral flux analysis. Output: onset events with timing precision better than transient detection alone. Use cases: tighter beat tracking, more precise tempo-locked effects, music information retrieval applications.
+
+**Chord recognizer.** Discrete events emitted when chord changes are detected, plus continuous output of detected chord identity. DSP cost: moderate to high, requires chromagram analysis. Output: chord identity (root note plus quality) plus change events. Use cases: harmonically-aware effects, automatic accompaniment, key-detection for melodic algorithms.
+
+### DSP Cost Headroom
+
+The H7 has comfortable DSP headroom for several analysis algorithms running alongside normal effects processing. A typical B variant module configured for guitar pedalboard use (a few effects in series, perhaps a delay and reverb plus modest distortion) uses perhaps 30-50% of the H7's DSP budget. The remaining headroom comfortably supports several analyses: envelope follower plus transient detector plus voice activity detector use perhaps 10-15% of the H7. Adding a pitch detector or beat tracker brings the total to maybe 50-70%, still comfortable.
+
+The BX variant with its SHARC chip has substantially more headroom. The SHARC can run heavier algorithms (full beat trackers with high accuracy, complex pitch detection with low latency, FFT-based spectral analysis at high frame rates) without affecting the H7's capacity for effects processing.
+
+### V1 Scoping
+
+For v1, the recommended scope is the basic five algorithms: envelope follower, transient detector, voice activity detector, simple pitch detector, basic beat tracker. These cover the most common user-visible use cases and have well-understood implementations. The DSP cost is comfortable; the user-facing value is high.
+
+V1.x can add the more sophisticated algorithms: high-quality pitch detector, full beat tracker with downbeat detection, spectral feature extractor, onset detector. These benefit from BX-class compute or from H7 modules dedicated to analysis rather than effects.
+
+V2 territory: chord recognition, full music information retrieval, machine-learning-based source separation, advanced room analysis. These probably need substantially more compute than v1 silicon provides.
+
+### The User-Facing Configuration
+
+The web platform's routing graph editor needs to expose audio-to-control extraction as a configurable element. Users add an "audio analyzer" node to the graph, configure which algorithms it runs (checkbox list with parameter tweaks), and connect its outputs (envelope, triggers, pitch, tempo, etc.) to parameters on other modules. The configuration UI should make this approachable for non-technical users who do not want to think about FFT sizes or analysis frame rates.
+
+The default settings should produce useful behavior out of the box. A user who plugs in a microphone and selects "beat tracking" should get reasonable tempo extraction without further configuration. Advanced users can tweak thresholds, smoothing constants, and analysis parameters as needed.
+
+### The "Listening Module" as a Specific Product
+
+The audio-to-control capability suggests a specific product framing worth considering: a "Listening Module" or "Audio Sensor Module" that is configured by default as the ears of a rig. The module has a microphone input optimized for ambient capture, default analysis algorithms running, control signal outputs flowing to the routing graph. Users buy this module specifically to add audio-driven control to their existing rig.
+
+This is essentially an A variant with default-on audio analysis, perhaps with a wider-pickup microphone preamp and clearer documentation about what the module is for. The hardware is identical to a standard A variant; the configuration and marketing are different. This is the kind of product variation that the platform's open architecture enables without requiring different hardware.
+
+### Strategic Value
+
+The audio-to-control capability is a real differentiator from traditional gear. The traditional separation between audio path and control path is something musicians experience as a limitation: they want their effects to respond to the music, but the gear cannot hear the music. Metapedal lets the gear listen, which sounds like science fiction to musicians who have only worked with traditional gear.
+
+The marketing story writes itself. "Your delay locks to the drummer automatically." "Your reverb gets wetter when the singer goes quiet." "Your bass synth ducks under every kick hit without sidechain wiring." Each of these is concrete, evocative, and demonstrates a capability that traditional gear simply does not have.
+
+Worth emphasizing this capability in the executive summary, the vision doc, the casual pitch, and any marketing materials. It is one of the platform's strongest user-facing stories and falls out naturally from the architecture without requiring new hardware development.
 
 ## Version Two: An Open Question
 
@@ -382,6 +546,14 @@ The most important framing change is that v2 is not a promise to users. Users bu
 This framing protects both the platform and the users. The platform does not over-promise. Users do not feel obsolete. The architecture stays stable long enough for the ecosystem to mature around it.
 
 
+
+**NXP i.MX RT1170 family** (available since 2021): Cortex-M7 at 1 GHz plus a secondary Cortex-M4 at 400 MHz, dual native gigabit ethernet ports with AVB and TSN, up to 2 MB SRAM, mature ecosystem. Higher clock speed than V8 (1 GHz vs 800 MHz) on the main core. The secondary M4 core could handle separate workloads like network protocols while the M7 focuses on DSP. The mature ecosystem is a real advantage; the chip has been in production for years with extensive third-party support, libraries, and reference designs.
+
+The cost of switching from ST to NXP ecosystem is real (different IDE, different libraries, different vendor support culture) but the technical capabilities are competitive with or better than the V8. Pricing is in the $15-30 range in production volumes.
+
+**Renesas RA8P1** (available now): Cortex-M85 at 1 GHz plus secondary Cortex-M33 at 250 MHz, native gigabit ethernet, Ethos-U55 NPU for AI/ML acceleration. The fastest Cortex-M85 currently shipping. The NPU is unique to this option and could provide hardware acceleration for neural amp modeling well beyond what the Helium MVE on V8 or the M7 on RT1170 can do. Available at $20-28 in small quantities.
+
+The Renesas ecosystem is less familiar to ST developers but the e2 Studio IDE and Flexible Software Package are mature. The NPU advantage is meaningful if neural processing is a key v2 use case.
 
 ### System-on-Module Considerations
 

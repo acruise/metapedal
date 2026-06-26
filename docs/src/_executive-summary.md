@@ -20,7 +20,7 @@ Modules connect through USB-C cables for short runs (typical pedalboard configur
 
 Configuration happens through a web interface served from a network coprocessor on each module. The musician's phone, tablet, or laptop becomes a routing-graph editor where they can drag connections between sources and destinations, configure each module's specific behavior, save presets, and share configurations with other musicians. The web platform runs on every modern device without requiring downloads or dedicated apps.
 
-The whole architecture is open hardware with an open mezzanine bus specification. The 50-pin connector between motherboard and mezzanine is a documented contract: any conforming mezzanine works with any Metapedal motherboard. The specification covers pin allocation, lease-based I2S resource allocation, identification protocol, mechanical constraints, and compliance testing. Third parties can design and produce mezzanines independently of the platform's vendor team, and those mezzanines work transparently with the rest of the ecosystem.
+The whole architecture is open hardware with an open mezzanine bus specification. The 80-pin connector between motherboard and mezzanine is a documented contract: any conforming mezzanine works with any Metapedal motherboard. The specification covers pin allocation, lease-based I2S resource allocation, identification protocol, mechanical constraints, and compliance testing. Third parties can design and produce mezzanines independently of the platform's vendor team, and those mezzanines work transparently with the rest of the ecosystem.
 
 ## What It Enables
 

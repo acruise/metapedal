@@ -84,6 +84,72 @@ Version one explicitly excludes several capabilities that the architecture suppo
 
 This scope is deliberately ambitious enough to be a useful product and deliberately constrained enough to be achievable. The platform ships with real users doing real things, and the harder problems get tackled in version two with the benefit of experience from version one.
 
+## The BX2 as Marketing North Star
+
+The platform's retail positioning strategy centers on one specific variant as the North Star product: the BX2. This is the flagship of the standard product family and serves as the marketing anchor for the platform's value proposition. The BX2 positioning shapes how the platform's value gets communicated to potential customers.
+
+The BX2 is priced competitively with the entry-level USB audio interfaces that dominate the consumer audio market: the Focusrite Scarlett 2i2, the PreSonus AudioBox, the Native Instruments Komplete Audio, similar products in the $150-200 retail range. These are the products that bedroom producers, home recordists, podcasters, and first-time audio interface buyers reach for. They define the price point for "competent two-input audio interface" in consumer minds.
+
+The BX2 at the same price point delivers everything those interfaces do, plus everything else the Metapedal platform does. The value comparison is direct and substantial.
+
+### The Strict-Superset Argument
+
+A Scarlett 2i2 provides two combo jack inputs with preamps and phantom power, two line outputs, headphone output, and a USB connection to a computer running a DAW. That is the entirety of its capability. It is competent at what it does and useful for users who fit the computer-plus-DAW workflow. It cannot do anything without a computer running software that does the actual audio processing, monitoring, and recording.
+
+The BX2 provides the same I/O complement: two combo jacks (each configurable as input or output), two outputs (the combo jacks plus TRRS), headphone output, USB connection that presents as a class-compliant audio interface to any computer. Every use case the 2i2 serves, the BX2 serves equally well or better. A user buying the BX2 as a Scarlett 2i2 replacement loses nothing.
+
+The BX2 additionally provides: substantial onboard DSP through the H7 plus the SHARC fat DSP. Standalone operation without a computer. The full Metapedal routing graph with software-defined input/output configuration. Multi-module chain integration. Web-based configuration accessible from any device. The audio-listening control extraction features (tempo tracking, transient detection, envelope following, pitch detection). Use as a guitar amp simulator, vocal processor, drum machine, synth voice, hardware effect processor, or any combination. Per-instance configuration that persists across firmware updates and follows the hardware through serial number tracking. Repairability through replaceable daughter boards.
+
+This is a strict superset. Everything the 2i2 does, the BX2 does. The BX2 does substantially more. At the same price.
+
+### The Killer Differentiator: Standalone Operation
+
+The most consequential capability gap between the BX2 and the 2i2-tier interfaces is standalone operation. Users buying an audio interface often do not initially appreciate that they are committing to the computer-plus-DAW workflow for the interface to be functional. They discover later that they would prefer to pick up an instrument and play without launching software, but their interface does not support that workflow.
+
+The BX2 does. Plug in a guitar, plug in headphones, hit power, play through onboard DSP effects in seconds. No computer required. The interface is a complete musical instrument processor that incidentally also works as an audio interface when the user wants to record.
+
+This capability is structural to the platform, not a feature checklist item. Competing audio interfaces would need to be redesigned from scratch to add comparable standalone capability; their architectures do not support it. The BX2's advantage is durable rather than something competitors can address through a firmware update.
+
+The marketing message lands hard: "Why pay the same money for an interface that needs a computer to do anything?" The implicit answer is that there is no reason; the rational choice for any user who can be exposed to both options is the BX2.
+
+### Why This Positioning Works
+
+It collapses the buying decision for users in the entry-level interface market. The choice between "the interface that does the basics" and "the interface that does the basics plus a whole platform of additional capability, at the same price" is not a hard choice. The BX2 wins on every dimension that matters except brand recognition, which is the only thing the incumbents have that the platform does not.
+
+It gives the platform a real entry point into a high-volume market. Audio interfaces in the 2i2 tier sell in substantial quantities (Focusrite has shipped millions of Scarlett 2i2s across their generations). Capturing even a small fraction of that market gives the platform the volume it needs for the rest of the strategy to work.
+
+It creates organic word-of-mouth. A user who buys the BX2 as a 2i2 replacement and then discovers they can use it as a standalone guitar processor, or a synth voice, or a hardware effect on their DAW, will tell other musicians. The word-of-mouth is genuine because the value is genuine. Users do not feel oversold; they feel they discovered something the platform did not even claim about itself initially.
+
+It positions against incumbents on their pricing terms. Focusrite, PreSonus, Steinberg, MOTU, all the audio interface vendors have entry-level products in this price range that the platform directly competes with. None of them offer the additional capability the BX2 brings. The competition is real and the platform's advantage is structural.
+
+### The Other Variants Position Around the North Star
+
+If the BX2 is the marketing North Star at $180-200 retail, the other variants find their positions around it:
+
+The B2 (without fat DSP) at $100-130 retail serves users who want the platform's flexibility but do not need the heavy DSP. It is the budget option for users who specifically care about cost above DSP capability.
+
+The B1 (single combo jack) at $70-85 retail serves single-channel users where one direction needs the combo jack and the other is fine at line level through TRRS. Solo guitarists, singers, bassists who only need one combo jack.
+
+The BX1 (single combo jack plus fat DSP) at $130-150 retail serves single-channel users who need heavy DSP. A guitarist running neural amp modeling with simultaneous high-quality reverb.
+
+The A variant at $50-60 retail serves users who do not need combo jacks at all: controllers, routing modules, synth voice modules, anything where the combo-jack signal quality is not required.
+
+The high-channel-count variants (B16, B32) serve recording and installation users at higher prices appropriate for their applications.
+
+Each variant has a clear position. The BX2 is the recommended default and the marketing focal point; the other variants serve specific narrower use cases at different price points. Users discovering the platform through the BX2 messaging can move to a different variant if their actual needs are narrower; users buying the BX2 directly get the broadly capable flagship.
+
+### Implementation Implications
+
+The BX2 positioning shapes several aspects of how the platform comes to market.
+
+Direct-to-consumer is the primary channel. Matching the 2i2's retail price while delivering substantially more capability requires the lower distribution overhead that direct-to-consumer enables. The traditional music retail channel with distributors and retailers each taking margins would push the BX2's necessary retail price above the 2i2 tier and break the positioning. Selling direct through the platform's own web storefront keeps the math working.
+
+The platform's web presence becomes important. The BX2's value proposition is partly explained by the capabilities listed above, but it lands more effectively through demonstration: video showing the BX2 being used as a 2i2 replacement and then immediately being used as a standalone guitar processor, with the user not changing anything in their setup. The website needs to support this kind of demonstration prominently.
+
+Reviewer outreach is critical because the BX2 is the kind of product that benefits from being put in the hands of audio reviewers who can compare it directly to the products it competes against. A reviewer who pits the BX2 against a 2i2 in a head-to-head and concludes that the BX2 is the better value at the same price provides credibility that the platform's own marketing cannot.
+
+The supply chain needs to support the BX2 as the primary volume product. If the BX2 captures meaningful 2i2-tier market share, the platform needs to manufacture them in larger quantities than the other variants. The supply chain decisions for v1 should anticipate BX2 being the highest-volume product in the family.
+
 ## Open Questions Worth Returning To
 
 Some questions about the platform have not been resolved at this stage and deserve to be flagged explicitly rather than glossed over. These are not necessarily problems but they are real open issues that need answers as the design matures.
@@ -140,6 +206,128 @@ Metapedal is genuinely the scaled-up engineering version of this: cans (modules)
 
 The image works on several levels: literal physical correspondence (the system is genuinely cans connected by cables), simplicity framing (the architecture is elemental at its boundaries), DIY ethos (anyone can string together Metapedal modules into whatever configuration their use case requires), network topology resonance (the chain-versus-star topology choice has a physical-world analog in how kids actually configure tin-can telephones), and an audio quality expectation gap (tin-can telephones famously sound terrible; Metapedal modules sound great, which becomes a fun surprise rather than a defensive claim).
 
+### The Logo: Tin Cans and String in Mid-Century Letterpress
+
+The platform's logo should make the tin-cans-and-string motif explicit at the visual identity level. Two tin cans connected by string, rendered in mid-century letterpress style. The motif has been doing strategic work throughout the platform's marketing thinking; making it the literal visual identity completes the integration.
+
+The composition is specific. "Meta" and "pedal" are labels on separate cans, each rendered in slightly different mid-century retail canned food marketing styling. The cans are facing opposite directions but arranged so the typography flows so the viewer reads the full wordmark across the gap. The string between them is haphazardly coiled on the surface, not held taut.
+
+The cans are not generic canned food but specifically musical canned food. Each can's product imagery makes the same joke twice (each is a real-canned-food product reimagined for musicians), with the cans complementing each other to encode the platform's full range.
+
+### The Meta Can: Musical Notation Pasta
+
+The left can is a parody of Alphaghetti (or Alpha-Bits, or any of the alphabet-shaped pasta products that have appeared on grocery shelves since the postwar era). Alphaghetti's appeal is that kids can spell things with their pasta before eating them; the can's label always shows a bowl of tomato sauce with letter-shaped pasta floating in it, often arranged on the label to spell something cute.
+
+The Metapedal version replaces the letters with musical notation symbols. The can's label shows tomato sauce with pasta shaped like quarter notes, eighth notes, sixteenth notes, rests, sharps, flats, naturals, treble clefs, bass clefs, time signature numbers, fermatas, and similar symbols. The arrangement of the symbols on the label can spell out a recognizable musical phrase, ideally the musical phrase from video one's through-line: the platform's signature melody rendered in pasta on the can.
+
+The visual joke is immediate. Alphaghetti is for kids who eat language; Musical Notation Pasta is for musicians who eat music. The platform is for people who think in music the way kids think in letters.
+
+The wordmark "Meta" is rendered in a custom typeface that looks like thick noodles. The letters are composed of consistent-width strokes with rounded terminals, no serifs, organic curves rather than geometric ones, and overlapping strokes where letters cross themselves. The letterforms have the slight imperfection of pasta that has been cooked and is sitting in sauce. Possibly a subtle shadow or highlight gives the noodles dimension, suggesting these are three-dimensional noodles photographed on a label rather than flat letters drawn on the label.
+
+This noodle-letter treatment continues the food-as-medium principle from the label imagery into the typography itself. The can's interior product (musical notation pasta) and the can's main wordmark (Meta, made of pasta-shaped letters) are the same kind of thing. The whole can is consistent: the imagery is noodles shaped like notation, and the wordmark is noodles shaped like the word.
+
+This is a recognized design tradition. Children's product packaging has used noodle letters for decades. Spaghetti-O's, Alphaghetti, Alpha-Bits, various other alphabet pasta products show their product name in a typeface that looks like the pasta inside. The Meta can participates in this typographic tradition.
+
+The label text completes the joke. A subtitle banner like "Genuine Musical Notation in a can!" mirrors the canned-food bragging conventions of the era and lands the platform's "in a can" motif explicitly. Quantity claims like "32 Symbols In Every Can!" mirror "26 Letters!" in real alphabet pasta marketing.
+
+The visual palette is the Campbell's-tomato-sauce tradition: deep red can body, cream label band, navy or black decorative banners, gold accent type. The aesthetic feels like a real product from the 1950s grocery aisle.
+
+### The Pedal Can: Premium Sliced Beats in a Can
+
+The right can is a parody of canned beets. Beets-to-beats is the wordplay that drives the joke. The can looks like a real can of beets from the postwar era: dark red-to-magenta color palette reflecting the beet juice color, visible beet-slice imagery on the label (only the slices are stylized to suggest something more rhythmic, perhaps with visible groove patterns on each slice), rustic-yet-domestic packaging tradition.
+
+The tagline on the label is "Premium Sliced Beats in a can!" — a single phrase that does all the work. The wordplay (beats not beets) lands in the standard canonical phrasing that real canned beets packaging uses ("Premium Sliced Beets in a Can"). The "in a can" callback makes the platform's strategic positioning explicit at the logo's own text level: the product is the platform's "in a can" motif made literal. The exclamation point fits mid-century food packaging convention, where postwar grocery marketing used exclamation points freely.
+
+The wordmark "pedal" is rendered in brush lettering that looks like it was written with a brush dipped in beet juice. The lettering has hand-drawn character throughout, with the slight irregularity that signals human hand rather than digital reproduction. Brush stroke terminals show the kind of slight tail or splash that a hand-loaded brush would produce. Possibly small drips or splashes near the letters suggest that the beet juice has been applied wetly. The character is confident and slightly slanted, not formal calligraphy but the kind of confident retail lettering that mid-century product designers produced for products that wanted to feel handmade.
+
+This brush-lettered treatment parallels the Meta can's noodle wordmark in continuing the food-as-medium principle. The Meta can's wordmark is made of pasta; the Pedal can's wordmark is made of beet juice. Each can's typography is composed of the can's internal product. The structural symmetry across both cans is clean: every element on every can reinforces the same design idea.
+
+The brush lettering also fits the canned-beets visual tradition. Real canned beets labels often have their product name in a slightly informal, brush-lettered style that suggests homemade or farm-fresh authenticity. The platform's logo participates in this tradition.
+
+The two wordmarks together are visually distinct but conceptually parallel. The Meta wordmark has the playful childishness of pasta letters; the Pedal wordmark has the more sophisticated craft of brush lettering. The two cans together cover both registers: cheerful and crafted, playful and serious, kid-friendly and adult-friendly. This mirrors the platform's broader audience reach.
+
+The musical association of beats is universal: every genre has beats. Hip-hop, EDM, rock, jazz, electronic, pop, country all have beats. The platform is for all kinds of musicians; the canned beats reference works across all genres.
+
+The visual palette is the canned beets tradition: deep red-magenta primary color, cream and gold accents, possibly a small farmer or grocer figure in vintage-package style. The aesthetic feels like a real product from the era.
+
+### Why These Two Specific Cans
+
+The two cans together encode the platform's full conceptual range. The Meta can's musical notation pasta represents the symbolic representation of music: the abstract symbols that musicians use to think about and write music. The Pedal can's beats represents the physical production of music: the actual sounds and rhythms that musicians produce. Meta and pedal as conceptual halves: notation and performance, symbol and sound, the two sides of how music exists in the world.
+
+The platform's value proposition is the transformation between these two registers. Musicians think in symbols (the notation pasta); musicians produce sounds (the beats); the platform is the tool that connects symbol to sound. The string coiled between the two cans is the connection that turns notation into performance.
+
+The cans are also visually distinct in ways that reinforce the platform's heterogeneity-with-coherence principle. Alphaghetti is a children's product with cheerful colors and decorative letters; canned beets is an adult kitchen staple with deeper colors and more utilitarian packaging. The two cans look like they came from different aisles of the grocery store but belong together in this composition. The platform supports musicians at all levels and across all backgrounds; the two cans cover the full audience.
+
+The jokes also operate at different levels of musical literacy. The Alphaghetti-to-music-notation transformation requires the viewer to recognize music notation symbols (which all musicians do, even casually). The beets-to-beats wordplay requires only that the viewer recognize the word "beats" in music context (which essentially everyone does). The two cans together reach both casual and serious musical audiences.
+
+### Why the Specific Composition Choices Matter
+
+**The wordmark split across two cans.** Metapedal is not a single thing; it is at least two things working together. The product's modularity is encoded in the logo itself. The viewer absorbs "this is a platform of multiple connected pieces" before they have read any marketing copy. The split also creates a small visual puzzle the viewer enjoys solving: the eye sees "Meta" on one can and "pedal" on the other and assembles the word across the gap. The logo rewards attention.
+
+**Different retail canned food styling on each can.** The platform supports heterogeneous modules. Different modules from different makers, different configurations, different stickers, different visual identities. The two-cans-with-different-styling logo encodes this heterogeneity at the visual identity level. Each can looks like a real product from the era, but the two products are different brands working together. The composition becomes a small fictional history: these two products exist in the same world, came from the same era, sit on the same shelf, can be combined to spell Metapedal.
+
+**Cans facing opposite directions with flowing typography.** This is the most sophisticated choice in the composition. The cans are not just sitting side by side; they are oriented in opposite directions, but the typography is arranged so the words read correctly across the cans. The cans look like they were set down casually rather than arranged for a hero shot. The opposite-facing orientation also signals philosophically: the platform is not about cans facing the same way (a monolithic system, everything aligned). The platform is about cans that are pointed at different things, doing different jobs, but participating in the same overall design. The composition encodes modularity-with-coherence.
+
+**The string haphazardly coiled on the surface.** This is the detail that elevates the logo from competent to genuinely interesting. The string is not taut between the cans; the string is just sitting on the surface, coiled loosely, decorative rather than functional. If the string were taut, the composition would say "these two cans are actively communicating right now." The platform's logo is not depicting the platform in operation; it is depicting the platform at rest, with the connection-potential implied rather than active. The casual coiling suggests the string was set down without ceremony. The composition has the warmth of an object that has been used and put away, not the sterility of a product shot.
+
+The string is also doing conceptual work specific to the two cans flanking it. The Meta can contains symbols (music notation); the Pedal can contains sounds (beats). The string between them is the platform's role in transforming symbols into sounds. Musicians think in symbols; musicians produce sounds; the platform is the connection that moves musical ideas from one register to the other. The string coiled on the surface implies this transformation is available rather than active: the platform is ready to be used when the musician picks up the string.
+
+### Why Mid-Century Letterpress Specifically
+
+Letterpress printing peaked in the early-to-mid twentieth century. The style has specific visual characteristics: thick ink coverage with slight imperfections, type that looks slightly pressed into the page rather than printed on it, illustrations that combine bold linework with halftone textures, color palettes constrained by multi-pass printing realities.
+
+Mid-century specifically refers to the design sensibilities of roughly 1945-1965: simplified illustration, optimistic geometry, the visual language of post-war American advertising before it became fully slick and corporate. The work of Saul Bass, early Push Pin Studios, midcentury jazz album covers, beer labels, travel brochures.
+
+The combination signals craft, authenticity, and a specific cultural moment. The design explicitly draws on a historical aesthetic rather than the latest visual trend. The platform's marketing positions itself in a tradition rather than in the present moment's design fashions.
+
+This fits the platform's broader voice and cultural references. The platform's voice has been consistently casual, slightly nostalgic, anti-aspirational, willing to celebrate small and inexpensive things. The platform's cultural references have leaned toward this era and tradition: the Mercury astronaut connection, the Hello Cleveland cliche, the general willingness to be culturally literate without being trendy.
+
+### The Composition as Still Life
+
+The whole logo reads as a still life. Two cans and a coiled string on a surface, arranged casually but composed deliberately. This is genuinely the tradition the logo is invoking: mid-century commercial illustration that treated everyday objects with painterly attention, the visual language of postwar advertising that elevated the ordinary into the aesthetic.
+
+The still life tradition has cultural weight. Cezanne's apples and oranges. Warhol's soup cans. The whole history of paintings that take ordinary objects seriously enough to compose them carefully. The platform's logo positions itself in this tradition. The cans and string are not just product elements; they are subjects worthy of compositional attention.
+
+The composition also implies a small narrative. Someone has been using these cans. They have been set down. The string has been used for connection and then casually coiled when the work was done. The arrangement is what is left after the working has happened. The viewer is looking at the platform's tools at rest. This narrative implication fits the platform's broader marketing universe where the videos have been showing real musicians doing real work with real gear.
+
+### The Contrast with Audio Gear Marketing Aesthetics
+
+The dominant aesthetic in current audio gear marketing is technological: black metal finishes, glowing LEDs, futuristic typography, hero shots of gear against neutral backgrounds. Universal Audio, Apollo, Neumann, and the high-end audio interface category all use variations of this aesthetic.
+
+A mid-century letterpress logo with casually arranged tin cans is the opposite of this. The platform announces visually that it is not in the same aesthetic conversation as the technological-futuristic competitors. The platform is in a different conversation: craft, tradition, warmth, accessibility, the celebration of well-made everyday objects.
+
+Most product logos try to convey strength, modernity, authority. They use bold typography, dramatic colors, aggressive geometry. The platform's logo does the opposite. The composition is casual: two cans facing different directions, string coiled lazily on the surface, no central focal point demanding attention. This anti-marketing character is itself the marketing. The viewer encounters the logo and absorbs that the platform is not trying too hard to impress them, which is paradoxically more impressive than the alternative.
+
+### Color Palette
+
+Mid-century letterpress typically used limited color palettes for practical reasons. Three or four colors maximum, often with one being the paper itself showing through. The colors tend toward warm muted tones: cream paper, deep red ink, navy blue, forest green, mustard yellow, brown.
+
+The two cans can each draw from this palette differently. The "Meta" can might use red-and-cream like a Campbell's reference; the "pedal" can might use navy-and-mustard like a coffee tin reference. The string can be a warm brown or muted gold. The surface the cans rest on can be a cream or paper-color showing through.
+
+The palette extends to other visual materials. The video portfolio's title cards and marketing text can use these colors. The website and product packaging can pick up the same palette. The platform develops a coherent visual identity grounded in the logo's color choices.
+
+### Execution
+
+A real mid-century letterpress logo would be substantially hand-crafted. The illustrator who draws the cans and string needs to know the conventions of the era. The typographer who sets the wordmark needs to understand period-appropriate letterforms. The color separations need to feel like multi-pass printing rather than digital reproduction.
+
+The specific composition described above is more demanding to execute than a straightforward symmetrical logo would be. The designer needs to compose two cans with different visual identities that still feel like they belong together; arrange the cans facing opposite directions while keeping the typography readable; coil the string convincingly on the surface; render the whole thing in mid-century letterpress style with appropriate weight, texture, color, and detail; balance the composition so it works at multiple sizes and in multiple contexts.
+
+This is real design work that benefits from a designer with substantial illustration skill. The platform should commission this from a designer who specializes in vintage-inspired illustration. Aaron Draplin and similar designers have the right energy; various smaller studios specialize in this kind of work. The designer's job is to create a logo that feels like it could have been printed in 1955 for a product that did not exist until much later. The anachronism is the joke; the platform is contemporary but visually identifies with the craft tradition of an earlier era.
+
+### The Logo as Platform Manifesto
+
+Every element of the composition encodes something about the platform's identity. The two cans with separate labels say "platform of multiple pieces." The different brand identities say "heterogeneous modules from different sources." The opposite-facing orientations say "modularity is not monoculture." The flowing typography says "these pieces coordinate despite their differences." The coiled string says "connection is potential, available, casual." The mid-century styling says "we are in the craft tradition, not the technological-futuristic tradition." The retail-canned-food specificity says "we are about ordinary things treated with care."
+
+The logo is doing extraordinary structural work. Every visual choice maps to something specific about what the platform is. The composition is the platform's positioning made visual.
+
+### Coherence Across the Platform's Marketing Identity
+
+The mid-century letterpress logo provides visual contrast with the video portfolio's casual, naturalistic aesthetic. The videos are contemporary and observational; the logo is historical and crafted. The videos are documentary; the logo is iconographic. The two together give the platform's marketing both contemporary relevance and traditional craft positioning.
+
+The tin-cans-and-string motif now appears in the platform's strategy document, the verbal voice, the logo, and potentially in other parts of the visual identity. The motif becomes the platform's central conceptual anchor.
+
+ Every time the platform's marketing references tin cans and string, the audience absorbs the conceptual frame: connection through simple means, communication as a fundamental impulse, the platform as a sophisticated version of an elemental idea.
+
 ### Prior Art: The Spamp
 
 There is meaningful prior art in this voice/positioning territory that the platform should be aware of and respectful toward. The Spamp is a guitar headphone practice amplifier built by an anonymous "Spamp Man" in Liverpool, UK, sold on Etsy since around 2001. The product is a JFET-based preamp and distortion effect housed in an actual Spam can. The controls are SPICE (gain before distortion) and HEAT (level after distortion), with distortion modes labeled CHILLED, FRIED, and GRILLED.
@@ -167,6 +355,43 @@ Most pedal and audio gear marketing emphasizes either technical specifications (
 Metapedal's voice can be a deliberate contrast. The cans-and-string framing is honest about what the platform is (small computers in aluminum enclosures, connected by cables, programmed to do useful things). The framing does not over-claim, does not lean on premium qualifiers, does not use technical specifications as marketing badges. The voice respects the reader's intelligence by being clear and concrete rather than impressive and vague.
 
 This is a meaningful strategic differentiation. Users approach a new audio product with skepticism developed from years of being marketed at. Marketing that is openly playful and honest about what the product is can earn trust where sterile professional-sounding marketing cannot. Tin cans and string is the right voice for a platform whose value comes from doing real work rather than from claiming to be premium.
+
+### The Reframe Pattern: Identifying Pain and Pointing at Liberation
+
+A specific marketing technique worth committing to is what could be called the reframe pattern: take a familiar pain point in the existing audio gear world, point out that the platform does not have that pain point, and let the user experience the relief of realizing they could have been living without the pain all along. The structure is a dialogue between a remembered frustration and the platform's distinctive answer to it.
+
+The canonical example is the laptop-dependence reframe:
+
+> "Oh shit I left my laptop at home"
+> "No you didn't, you banished it."
+
+This works because it identifies a moment everyone using computer-dependent audio gear has experienced. The panic of realizing the laptop is missing is real because the laptop is load-bearing infrastructure for the whole rig: no laptop means no recording, no monitoring, no effects, no anything. The whole setup is dead weight without it.
+
+The reframe turns panic into triumph. The laptop is not missing because of an oversight; it is missing because the user chose to live free of it. The BX2 is the instrument of that freedom. Everything the laptop-plus-interface used to do now lives in one aluminum can that does not need the laptop at all.
+
+The word "banished" is doing serious work in the line. It implies intentionality, agency, and a slight violence against the laptop that audiophiles will recognize as cathartic. The laptop has been the necessary evil of digital audio for two decades; banishing it is a personal liberation that the platform makes possible. The slight profanity ("oh shit") signals authenticity rather than corporate marketing speak; real musicians swear when they think they have screwed up.
+
+Several other reframes in this spirit fit naturally with the platform's distinctive capabilities:
+
+The "no app" reframe. "Where's the app for this?" "There isn't one. You just open a web browser." Users have been trained to expect a proprietary app for every piece of audio gear; the platform's web-based UI means no app to download, no platform-specific software, no version compatibility nightmares.
+
+The "moving rigs" reframe. "Wait, I have to reconfigure everything for the new venue?" "No, your presets follow you." The serial-number-based per-instance configuration tracking means users do not lose their work when hardware moves between rigs.
+
+The "broken jack" reframe. "Ugh, my pedal's jack failed; time to send it in for repair?" "No, swap the daughter board yourself in two minutes." The platform's commitment to replaceable physical interfaces turns expected catastrophe into expected maintenance.
+
+The "upgrade time" reframe. "Oh, you replaced your rig?" "No, I just got new mezzanines. Same motherboards." The mezzanine architecture means users upgrade incrementally rather than replacing whole modules.
+
+The "computer crashed" reframe. "Did you lose your set when OBS crashed?" "No, the audio kept recording. Just the stream went down." The platform's dedicated hardware running real-time audio firmware survives computer crashes that take down purely software-based setups.
+
+Each reframe has the same structure: identify a familiar frustration, point out that the platform does not have that frustration, let the user experience the relief. The frustrations are real (every musician who has used digital gear has lived these moments). The platform's answers are real (the architectural commitments the platform has made genuinely deliver these properties). The marketing is honest because both the pain and the relief are accurate.
+
+This reframe pattern is the kind of marketing voice that lands particularly well in casual contexts: social media posts, video voiceovers, conversations with potential users at events. It does not lecture or claim premium status. It just points at common frustrations and offers a glimpse of life without them. Users do the rest of the work themselves; they recognize their own experiences in the frustration and decide whether the relief matters to them.
+
+### The Video Portfolio
+
+The platform commits to four canonical launch videos that demonstrate the platform across its main audience categories: a drawer-to-stage video for individual musicians, a Band In A Can video for collaborative band scenarios, a hardware hacker video for the maker community, and a thrift store discovery video for budget-conscious vintage-sound enthusiasts. Each video follows the platform's general video approach: real workflow by real people using the platform to make real music, with the casual register and narrative-arc approach that distinguishes the platform from competing audio gear marketing.
+
+The detailed video scripts, including production-ready creative briefs, supporting analysis of what makes each video work, and the framework for extending the portfolio with future videos, are captured in a separate document: video-01-scripts.md. That document complements this strategy document by providing the specific production material that expresses the strategic identity articulated here.
 
 ### Where the Voice Lives
 
